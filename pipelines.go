@@ -43,6 +43,25 @@ func StreamSlice[T any](ctx context.Context, data []T) <-chan T {
 	return stream
 }
 
+// StreamMap takes a map and streams the keys through the returned channel
+func StreamMap[T comparable](ctx context.Context, data map[T]bool) <-chan T {
+	stream := make(chan T)
+
+	go func() {
+		defer close(stream)
+
+		for key := range data {
+			select {
+			case <-ctx.Done():
+				return
+			case stream <- key:
+			}
+		}
+	}()
+
+	return stream
+}
+
 // FanOut controls how much data is taken and processed from the input channel
 func FanOut[T any, H any](ctx context.Context, inputStream <-chan T, fn func(context.Context, T) H, numFan int) []<-chan H {
 	process := func() <-chan H {
