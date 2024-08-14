@@ -1,3 +1,3 @@
 # Go Pipelines
 
-Generic concurrency utilities
+Generic functions to help with concurrency
