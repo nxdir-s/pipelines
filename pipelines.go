@@ -93,7 +93,7 @@ func FanOut[T any, H any](ctx context.Context, inputStream <-chan T, fn func(con
 	return fanOutChannels
 }
 
-// FanOut controls how much data is taken and processed from the input channel
+// FanOutC controls how much data is taken and processed from the input channel
 func FanOutC[T comparable, H comparable](ctx context.Context, inputStream <-chan T, fn func(context.Context, T) H, numFan int) []<-chan H {
 	process := func() <-chan H {
 		stream := make(chan H)
