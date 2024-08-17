@@ -67,7 +67,7 @@ func FanOut[T any, H any](ctx context.Context, inputStream <-chan T, fn func(con
 	process := func() <-chan H {
 		stream := make(chan H)
 
-		go func(f func(context.Context, T) H) {
+		go func() {
 			defer close(stream)
 
 			for value := range inputStream {
@@ -76,10 +76,10 @@ func FanOut[T any, H any](ctx context.Context, inputStream <-chan T, fn func(con
 					return
 				default:
 					// process data with supplied function
-					stream <- f(ctx, value)
+					stream <- fn(ctx, value)
 				}
 			}
-		}(fn)
+		}()
 
 		return stream
 	}
