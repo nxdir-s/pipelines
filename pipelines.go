@@ -44,7 +44,7 @@ func StreamSlice[T any](ctx context.Context, data []T) <-chan T {
 }
 
 // StreamMap takes a map and streams the keys through the returned channel
-func StreamMap[T comparable, H any](ctx context.Context, data map[T]H) <-chan H {
+func StreamMap[T comparable, H comparable](ctx context.Context, data map[T]H) <-chan H {
 	stream := make(chan H)
 
 	go func() {
