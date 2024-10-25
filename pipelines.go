@@ -44,17 +44,17 @@ func StreamSlice[T any](ctx context.Context, data []T) <-chan T {
 }
 
 // StreamMap takes a map and streams the keys through the returned channel
-func StreamMap[T comparable](ctx context.Context, data map[T]bool) <-chan T {
-	stream := make(chan T)
+func StreamMap[T comparable, H any](ctx context.Context, data map[T]H) <-chan H {
+	stream := make(chan H)
 
 	go func() {
 		defer close(stream)
 
-		for key := range data {
+		for _, val := range data {
 			select {
 			case <-ctx.Done():
 				return
-			case stream <- key:
+			case stream <- val:
 			}
 		}
 	}()
