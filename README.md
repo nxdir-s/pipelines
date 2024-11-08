@@ -2,7 +2,7 @@
 
 This repository contains generic functions that help with concurrent data processing
 
-### Table of Contents
+## Table of Contents
 
 - [Usage](#usage)
 - [Example](#example)
