@@ -24,7 +24,7 @@ func GenerateStream[T any](ctx context.Context, fn func() T) <-chan T {
 	return stream
 }
 
-// StreamSlice takes a slice and streams it through the returned channel
+// StreamSlice takes a slice of type []T and returns a channel of type T
 func StreamSlice[T any](ctx context.Context, data []T) <-chan T {
 	stream := make(chan T)
 
@@ -43,7 +43,7 @@ func StreamSlice[T any](ctx context.Context, data []T) <-chan T {
 	return stream
 }
 
-// StreamMap takes a map and streams the keys through the returned channel
+// StreamMap takes a map of type map[T]H and returns a channel of type H
 func StreamMap[T comparable, H comparable](ctx context.Context, data map[T]H) <-chan H {
 	stream := make(chan H)
 
@@ -62,7 +62,7 @@ func StreamMap[T comparable, H comparable](ctx context.Context, data map[T]H) <-
 	return stream
 }
 
-// FanOut controls how much data is taken and processed from the input channel
+// FanOut controls concurrent processing of data from the input channel
 func FanOut[T any, H any](ctx context.Context, inputStream <-chan T, fn func(context.Context, T) H, numFan int) []<-chan H {
 	process := func() <-chan H {
 		stream := make(chan H)
@@ -93,7 +93,7 @@ func FanOut[T any, H any](ctx context.Context, inputStream <-chan T, fn func(con
 	return fanOutChannels
 }
 
-// FanOutC controls how much data is taken and processed from the input channel
+// FanOutC controls concurrent processing of data from the input channel
 func FanOutC[T comparable, H comparable](ctx context.Context, inputStream <-chan T, fn func(context.Context, T) H, numFan int) []<-chan H {
 	process := func() <-chan H {
 		stream := make(chan H)
