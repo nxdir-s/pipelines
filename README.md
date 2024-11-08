@@ -2,7 +2,10 @@
 
 This repository contains generic functions that help with concurrent data processing
 
-[TOC]
+## Table of Contents
+
+- [Usage](#usage)
+- [Example](#example)
 
 ## Usage
 
