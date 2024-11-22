@@ -2,11 +2,6 @@
 
 This repository contains generic functions that help with concurrent data processing
 
-### Table of Contents
-
-- [Usage](#usage)
-- [Example](#example)
-
 ## Usage
 
 A data pipeline can be created from a slice or map
