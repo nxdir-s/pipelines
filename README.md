@@ -10,7 +10,7 @@ A data pipeline can be created from a slice or map
 stream := pipelines.StreamSlice(ctx, data)
 ```
 
-or from a generator function
+Or from a generator function
 
 ```go
 func GenerateData() int { return rand.Intn(10) }
