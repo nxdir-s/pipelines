@@ -2,7 +2,7 @@
 
 This repository contains generic functions that help with concurrent data processing
 
-## Table of Contents
+### Table of Contents
 
 - [Usage](#usage)
 - [Example](#example)
@@ -15,12 +15,12 @@ A data pipeline can be created from a slice or map
 stream := pipelines.StreamSlice(ctx, data)
 ```
 
-FanOut can be used to process data concurrently. Useful for I/O bound processes
+FanOut can be used to process data concurrently. Useful for I/O bound processes, but it can be used in any situation where you have a slice/map of data and want to introduce concurrent processing
 
 ```go
-maxFan := 3
+const MaxFan int = 3
 
-fanOutChannels := pipelines.FanOut(ctx, stream, ProcessFunc, maxFan)
+fanOutChannels := pipelines.FanOut(ctx, stream, ProcessFunc, MaxFan)
 ```
 
 Use FanIn to merge data into one channel
