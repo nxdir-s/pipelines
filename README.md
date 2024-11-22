@@ -1,6 +1,6 @@
 # Go Pipelines
 
-This repository contains generic functions that help with concurrent data processing
+Go Pipelines contains generic functions that help with concurrent data processing
 
 ## Usage
 
