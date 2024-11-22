@@ -18,7 +18,9 @@ func GenerateData() int { return rand.Intn(10) }
 stream := pipelines.GenerateStream(ctx, GenerateData)
 ```
 
-FanOut can be used to process data concurrently. Useful for I/O bound processes, but it can be used in any situation where you have a slice/map of data and want to introduce concurrent processing
+### FanOut
+
+**FanOut** can be used to process data concurrently. Useful for I/O bound processes, but it can be used in any situation where you have a slice/map of data and want to introduce concurrent processing
 
 ```go
 const MaxFan int = 3
@@ -26,7 +28,9 @@ const MaxFan int = 3
 fanOutChannels := pipelines.FanOut(ctx, stream, ProcessFunc, MaxFan)
 ```
 
-Use FanIn to merge data into one channel
+### FanIn
+
+**FanIn** can be used to merge data into one channel
 
 ```go
 fanInData := pipelines.FanIn(ctx, fanOutChannels...)
