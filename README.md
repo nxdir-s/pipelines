@@ -10,6 +10,14 @@ A data pipeline can be created from a slice or map
 stream := pipelines.StreamSlice(ctx, data)
 ```
 
+or from a generator function
+
+```go
+func GenerateData() int { return rand.Intn(10) }
+
+stream := pipelines.GenerateStream(ctx, GenerateData)
+```
+
 FanOut can be used to process data concurrently. Useful for I/O bound processes, but it can be used in any situation where you have a slice/map of data and want to introduce concurrent processing
 
 ```go
