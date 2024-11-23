@@ -4,7 +4,7 @@ Go Pipelines contains generic functions that help with concurrent data processin
 
 ## Usage
 
-A data pipeline can be created from a slice or map
+A pipeline can be created from a slice or map
 
 ```go
 stream := pipelines.StreamSlice(ctx, data)
