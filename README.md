@@ -1,6 +1,6 @@
 # Go Pipelines
 
-Go Pipelines contains generic functions that help with concurrent data processing
+Go Pipelines contains generic functions that help with concurrent processing
 
 ## Usage
 
