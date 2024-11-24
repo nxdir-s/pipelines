@@ -20,7 +20,7 @@ stream := pipelines.GenerateStream(ctx, GenerateData)
 
 ### FanOut
 
-`FanOut` can be used to process data concurrently. Useful for I/O bound processes, but it can be used in any situation where you have a slice/map of data and want to introduce concurrent processing
+`FanOut` can be used to process data concurrently. Useful for I/O bound processes, but it can be used in any situation where you have a slice or map of data and want to introduce concurrency
 
 ```go
 const MaxFan int = 3
