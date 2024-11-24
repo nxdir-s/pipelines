@@ -6,7 +6,7 @@ import (
 )
 
 // GenerateStream takes a function that generates data and returns a channel of type T
-func GenerateStream[T any](ctx context.Context, fn func() T) <-chan T {
+func GenerateStream[T any](ctx context.Context, fn func(context.Context) T) <-chan T {
 	stream := make(chan T)
 
 	go func() {
@@ -16,7 +16,7 @@ func GenerateStream[T any](ctx context.Context, fn func() T) <-chan T {
 			select {
 			case <-ctx.Done():
 				return
-			case stream <- fn():
+			case stream <- fn(ctx):
 			}
 		}
 	}()
