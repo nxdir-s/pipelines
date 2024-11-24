@@ -13,7 +13,7 @@ stream := pipelines.StreamSlice(ctx, data)
 Or from a generator function
 
 ```go
-func GenerateData() int { return rand.Intn(10) }
+func GenerateData(ctx context.Context) int { return rand.Intn(10) }
 
 stream := pipelines.GenerateStream(ctx, GenerateData)
 ```
@@ -57,7 +57,7 @@ const (
     MaxFan int = 3
 )
 
-func GenerateData() int {
+func GenerateData(ctx context.Context) int {
     return rand.Intn(5)
 }
 
