@@ -2,6 +2,8 @@ package pipelines
 
 import (
 	"context"
+	"os"
+	"os/signal"
 	"testing"
 )
 
@@ -21,7 +23,7 @@ func TestGenerateStreamInt(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		ctx, cancel := context.WithCancel(context.Background())
+		ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 
 		stream := GenerateStream(ctx, tc.in)
 
@@ -50,7 +52,7 @@ func TestStreamSliceInt(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		ctx, cancel := context.WithCancel(context.Background())
+		ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 
 		stream := StreamSlice(ctx, tc.in)
 
@@ -83,7 +85,7 @@ func TestStreamMapInt(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		ctx, cancel := context.WithCancel(context.Background())
+		ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 
 		stream := StreamMap(ctx, tc.in)
 
@@ -120,7 +122,7 @@ func TestFanOutInt(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		ctx, cancel := context.WithCancel(context.Background())
+		ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 
 		tc.in <- TestInt
 		close(tc.in)
@@ -137,6 +139,45 @@ func TestFanOutInt(t *testing.T) {
 					t.Errorf("FanOut: %v, want %v", out, tc.want)
 				}
 			}
+		}
+
+		cancel()
+	}
+}
+
+func TestFanInInt(t *testing.T) {
+	cases := []struct {
+		in     []int
+		fn     func(context.Context, int) int
+		numFan int
+		want   int
+	}{
+		{
+			in:     []int{TestInt, TestInt, TestInt, TestInt, TestInt},
+			fn:     func(ctx context.Context, data int) int { return data },
+			numFan: 3,
+			want:   TestInt,
+		},
+	}
+
+	for _, tc := range cases {
+		ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+
+		stream := StreamSlice(ctx, tc.in)
+		fanOut := FanOut(ctx, stream, tc.fn, tc.numFan)
+		outStream := FanIn(ctx, fanOut...)
+
+		count := 0
+		for out := range outStream {
+			count++
+
+			if out != tc.want {
+				t.Errorf("FanIn: %v, want %v", out, tc.want)
+			}
+		}
+
+		if count != len(tc.in) {
+			t.Errorf("FanIn: missing data, len() %v, found %v", len(tc.in), count)
 		}
 
 		cancel()
