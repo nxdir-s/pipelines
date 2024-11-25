@@ -50,11 +50,11 @@ func StreamMap[T comparable, H comparable](ctx context.Context, data map[T]H) <-
 	go func() {
 		defer close(stream)
 
-		for _, val := range data {
+		for i := range data {
 			select {
 			case <-ctx.Done():
 				return
-			case stream <- val:
+			case stream <- data[i]:
 			}
 		}
 	}()
