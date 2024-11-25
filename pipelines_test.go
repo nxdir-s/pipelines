@@ -49,6 +49,14 @@ func TestStreamSliceInt(t *testing.T) {
 			in:   []int{TestInt, TestInt, TestInt, TestInt, TestInt},
 			want: TestInt,
 		},
+		{
+			in:   []int{TestInt},
+			want: TestInt,
+		},
+		{
+			in:   []int{},
+			want: TestInt,
+		},
 	}
 
 	for _, tc := range cases {
@@ -82,6 +90,14 @@ func TestStreamMapInt(t *testing.T) {
 			in:   map[int]int{1: TestInt, 2: TestInt, 3: TestInt},
 			want: TestInt,
 		},
+		{
+			in:   map[int]int{1: TestInt},
+			want: TestInt,
+		},
+		{
+			in:   map[int]int{},
+			want: TestInt,
+		},
 	}
 
 	for _, tc := range cases {
@@ -110,13 +126,50 @@ func TestFanOutInt(t *testing.T) {
 	cases := []struct {
 		in     chan int
 		fn     func(context.Context, int) int
+		numIn  int
 		numFan int
 		want   int
 	}{
 		{
-			in:     make(chan int, 1),
+			in:     make(chan int),
 			fn:     func(ctx context.Context, data int) int { return data },
+			numIn:  1,
 			numFan: 3,
+			want:   TestInt,
+		},
+		{
+			in:     make(chan int),
+			fn:     func(ctx context.Context, data int) int { return data },
+			numIn:  1,
+			numFan: 1,
+			want:   TestInt,
+		},
+		{
+			in:     make(chan int),
+			fn:     func(ctx context.Context, data int) int { return data },
+			numIn:  10,
+			numFan: 3,
+			want:   TestInt,
+		},
+		{
+			in:     make(chan int),
+			fn:     func(ctx context.Context, data int) int { return data },
+			numIn:  10,
+			numFan: 1,
+			want:   TestInt,
+		},
+		{
+			in:     make(chan int),
+			fn:     func(ctx context.Context, data int) int { return data },
+			numIn:  0,
+			numFan: 3,
+			want:   TestInt,
+		},
+		{
+			in:     make(chan int),
+			fn:     func(ctx context.Context, data int) int { return data },
+			numIn:  0,
+			numFan: 1,
 			want:   TestInt,
 		},
 	}
@@ -124,8 +177,18 @@ func TestFanOutInt(t *testing.T) {
 	for _, tc := range cases {
 		ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 
-		tc.in <- TestInt
-		close(tc.in)
+		go func() {
+			defer close(tc.in)
+
+			for range tc.numIn {
+				select {
+				case <-ctx.Done():
+					return
+				default:
+					tc.in <- TestInt
+				}
+			}
+		}()
 
 		channels := FanOut(ctx, tc.in, tc.fn, tc.numFan)
 
@@ -145,7 +208,7 @@ func TestFanOutInt(t *testing.T) {
 	}
 }
 
-func TestFanInInt(t *testing.T) {
+func TestFanInIntSlice(t *testing.T) {
 	cases := []struct {
 		in     []int
 		fn     func(context.Context, int) int
@@ -158,12 +221,111 @@ func TestFanInInt(t *testing.T) {
 			numFan: 3,
 			want:   TestInt,
 		},
+		{
+			in:     []int{TestInt, TestInt, TestInt, TestInt, TestInt},
+			fn:     func(ctx context.Context, data int) int { return data },
+			numFan: 1,
+			want:   TestInt,
+		},
+		{
+			in:     []int{TestInt},
+			fn:     func(ctx context.Context, data int) int { return data },
+			numFan: 3,
+			want:   TestInt,
+		},
+		{
+			in:     []int{TestInt},
+			fn:     func(ctx context.Context, data int) int { return data },
+			numFan: 1,
+			want:   TestInt,
+		},
+		{
+			in:     []int{},
+			fn:     func(ctx context.Context, data int) int { return data },
+			numFan: 3,
+			want:   TestInt,
+		},
+		{
+			in:     []int{},
+			fn:     func(ctx context.Context, data int) int { return data },
+			numFan: 1,
+			want:   TestInt,
+		},
 	}
 
 	for _, tc := range cases {
 		ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 
 		stream := StreamSlice(ctx, tc.in)
+		fanOut := FanOut(ctx, stream, tc.fn, tc.numFan)
+		outStream := FanIn(ctx, fanOut...)
+
+		count := 0
+		for out := range outStream {
+			count++
+
+			if out != tc.want {
+				t.Errorf("FanIn: %v, want %v", out, tc.want)
+			}
+		}
+
+		if count != len(tc.in) {
+			t.Errorf("FanIn: missing data, len() %v, found %v", len(tc.in), count)
+		}
+
+		cancel()
+	}
+}
+
+func TestFanInIntMap(t *testing.T) {
+	cases := []struct {
+		in     map[int]int
+		fn     func(context.Context, int) int
+		numFan int
+		want   int
+	}{
+		{
+			in:     map[int]int{1: TestInt, 2: TestInt, 3: TestInt},
+			fn:     func(ctx context.Context, data int) int { return data },
+			numFan: 3,
+			want:   TestInt,
+		},
+		{
+			in:     map[int]int{1: TestInt, 2: TestInt, 3: TestInt},
+			fn:     func(ctx context.Context, data int) int { return data },
+			numFan: 1,
+			want:   TestInt,
+		},
+		{
+			in:     map[int]int{1: TestInt},
+			fn:     func(ctx context.Context, data int) int { return data },
+			numFan: 3,
+			want:   TestInt,
+		},
+		{
+			in:     map[int]int{1: TestInt},
+			fn:     func(ctx context.Context, data int) int { return data },
+			numFan: 1,
+			want:   TestInt,
+		},
+		{
+			in:     map[int]int{},
+			fn:     func(ctx context.Context, data int) int { return data },
+			numFan: 3,
+			want:   TestInt,
+		},
+		{
+			in:     map[int]int{},
+			fn:     func(ctx context.Context, data int) int { return data },
+			numFan: 1,
+			want:   TestInt,
+		},
+	}
+
+	for _, tc := range cases {
+		ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+
+		stream := StreamMap(ctx, tc.in)
 		fanOut := FanOut(ctx, stream, tc.fn, tc.numFan)
 		outStream := FanIn(ctx, fanOut...)
 
