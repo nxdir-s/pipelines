@@ -286,12 +286,12 @@ func TestFanInIntSlice(t *testing.T) {
 			count++
 
 			if out != tc.want {
-				t.Errorf("FanIn: %v, want %v", out, tc.want)
+				t.Errorf("FanIn: %d, want %d", out, tc.want)
 			}
 		}
 
 		if count != len(tc.in) {
-			t.Errorf("FanIn: missing data, len() %v, found %v", len(tc.in), count)
+			t.Errorf("FanIn: missing data, len() %d, found %d", len(tc.in), count)
 		}
 
 		cancel()
@@ -355,12 +355,12 @@ func TestFanInIntMap(t *testing.T) {
 			count++
 
 			if out != tc.want {
-				t.Errorf("FanIn: %v, want %v", out, tc.want)
+				t.Errorf("FanIn: %d, want %d", out, tc.want)
 			}
 		}
 
 		if count != len(tc.in) {
-			t.Errorf("FanIn: missing data, len() %v, found %v", len(tc.in), count)
+			t.Errorf("FanIn: missing data, len() %d, found %d", len(tc.in), count)
 		}
 
 		cancel()
