@@ -199,7 +199,7 @@ func TestFanOutInt(t *testing.T) {
 				case <-ctx.Done():
 					return
 				default:
-					tc.in <- TestInt
+					tc.in <- tc.want
 				}
 			}
 		}()
