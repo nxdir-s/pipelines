@@ -13,12 +13,24 @@ const (
 
 func TestGenerateStreamInt(t *testing.T) {
 	cases := []struct {
-		in   func(context.Context) int
-		want int
+		in      func(context.Context) int
+		want    int
+		wantOut int
 	}{
 		{
-			in:   func(ctx context.Context) int { return TestInt },
-			want: TestInt,
+			in:      func(ctx context.Context) int { return TestInt },
+			want:    TestInt,
+			wantOut: 1,
+		},
+		{
+			in:      func(ctx context.Context) int { return TestInt },
+			want:    TestInt,
+			wantOut: 10,
+		},
+		{
+			in:      func(ctx context.Context) int { return TestInt },
+			want:    TestInt,
+			wantOut: 100,
 		},
 	}
 
@@ -27,13 +39,22 @@ func TestGenerateStreamInt(t *testing.T) {
 
 		stream := GenerateStream(ctx, tc.in)
 
-		select {
-		case <-ctx.Done():
-			continue
-		case out := <-stream:
-			if out != tc.want {
-				t.Errorf("GenerateStream: %d, want %d", out, tc.want)
+		count := 0
+		for range tc.wantOut {
+			select {
+			case <-ctx.Done():
+				continue
+			case out := <-stream:
+				count++
+
+				if out != tc.want {
+					t.Errorf("GenerateStream: %d, want %d", out, tc.want)
+				}
 			}
+		}
+
+		if count != tc.wantOut {
+			t.Errorf("GenerateStream: missing data, wantOut %d, gotOut %d", tc.wantOut, count)
 		}
 
 		cancel()
