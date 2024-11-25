@@ -32,7 +32,7 @@ func TestGenerateStreamInt(t *testing.T) {
 			continue
 		case out := <-stream:
 			if out != tc.want {
-				t.Errorf("GenerateStream: %v, want %v", out, tc.want)
+				t.Errorf("GenerateStream: %d, want %d", out, tc.want)
 			}
 		}
 
@@ -69,12 +69,12 @@ func TestStreamSliceInt(t *testing.T) {
 			count++
 
 			if out != tc.want {
-				t.Errorf("StreamSlice: %v, want %v", out, tc.want)
+				t.Errorf("StreamSlice: %d, want %d", out, tc.want)
 			}
 		}
 
 		if count != len(tc.in) {
-			t.Errorf("StreamSlice: missing data, len() %v, found %v", len(tc.in), count)
+			t.Errorf("StreamSlice: missing data, len() %d, found %d", len(tc.in), count)
 		}
 
 		cancel()
@@ -110,12 +110,12 @@ func TestStreamMapInt(t *testing.T) {
 			count++
 
 			if out != tc.want {
-				t.Errorf("StreamMap: %v, want %v", out, tc.want)
+				t.Errorf("StreamMap: %d, want %d", out, tc.want)
 			}
 		}
 
 		if count != len(tc.in) {
-			t.Errorf("StreamMap: missing data, len() %v, found %v", len(tc.in), count)
+			t.Errorf("StreamMap: missing data, len() %d, found %d", len(tc.in), count)
 		}
 
 		cancel()
@@ -193,13 +193,13 @@ func TestFanOutInt(t *testing.T) {
 		channels := FanOut(ctx, tc.in, tc.fn, tc.numFan)
 
 		if len(channels) != tc.numFan {
-			t.Errorf("FanOut: number of channels %v, numFan %v", len(channels), tc.numFan)
+			t.Errorf("FanOut: number of channels %d, numFan %d", len(channels), tc.numFan)
 		}
 
 		for i := range channels {
 			for out := range channels[i] {
 				if out != tc.want {
-					t.Errorf("FanOut: %v, want %v", out, tc.want)
+					t.Errorf("FanOut: %d, want %d", out, tc.want)
 				}
 			}
 		}
