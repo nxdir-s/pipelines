@@ -172,6 +172,20 @@ func TestFanOutInt(t *testing.T) {
 			numFan: 1,
 			want:   TestInt,
 		},
+		{
+			in:     make(chan int),
+			fn:     func(ctx context.Context, data int) int { return data },
+			numIn:  100,
+			numFan: 3,
+			want:   TestInt,
+		},
+		{
+			in:     make(chan int),
+			fn:     func(ctx context.Context, data int) int { return data },
+			numIn:  100,
+			numFan: 1,
+			want:   TestInt,
+		},
 	}
 
 	for _, tc := range cases {
