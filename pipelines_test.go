@@ -197,11 +197,18 @@ func TestFanOutInt(t *testing.T) {
 		}
 
 		for i := range channels {
-			for out := range channels[i] {
-				if out != tc.want {
-					t.Errorf("FanOut: %d, want %d", out, tc.want)
+			go func() {
+				for out := range channels[i] {
+					select {
+					case <-ctx.Done():
+						return
+					default:
+						if out != tc.want {
+							t.Errorf("FanOut: %d, want %d", out, tc.want)
+						}
+					}
 				}
-			}
+			}()
 		}
 
 		cancel()
