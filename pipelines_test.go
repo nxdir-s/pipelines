@@ -9,7 +9,7 @@ const (
 	TestInt int = 1
 )
 
-func TestGenerateStream(t *testing.T) {
+func TestGenerateStreamInt(t *testing.T) {
 	cases := []struct {
 		in   func(context.Context) int
 		want int
@@ -38,7 +38,7 @@ func TestGenerateStream(t *testing.T) {
 	}
 }
 
-func TestStreamSlice(t *testing.T) {
+func TestStreamSliceInt(t *testing.T) {
 	cases := []struct {
 		in   []int
 		want int
@@ -71,7 +71,7 @@ func TestStreamSlice(t *testing.T) {
 	}
 }
 
-func TestStreamMap(t *testing.T) {
+func TestStreamMapInt(t *testing.T) {
 	cases := []struct {
 		in   map[int]int
 		want int
@@ -104,7 +104,7 @@ func TestStreamMap(t *testing.T) {
 	}
 }
 
-func TestFanOut(t *testing.T) {
+func TestFanOutInt(t *testing.T) {
 	cases := []struct {
 		in     chan int
 		fn     func(context.Context, int) int
