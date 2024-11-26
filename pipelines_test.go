@@ -20,6 +20,11 @@ func TestGenerateStreamInt(t *testing.T) {
 		{
 			in:      func(ctx context.Context) int { return TestInt },
 			want:    TestInt,
+			wantOut: 0,
+		},
+		{
+			in:      func(ctx context.Context) int { return TestInt },
+			want:    TestInt,
 			wantOut: 1,
 		},
 		{
