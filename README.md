@@ -1,4 +1,8 @@
-# Go Pipelines
+[![Go Reference](https://pkg.go.dev/badge/github.com/nxdir-s/pipelines.svg)](https://pkg.go.dev/github.com/nxdir-s/pipelines)
+[![Go Report Card](https://goreportcard.com/badge/github.com/nxdir-s/pipelines)](https://goreportcard.com/report/github.com/nxdir-s/pipelines)
+[![Go Coverage](https://github.com/nxdir-s/pipelines/wiki/coverage.svg)](https://raw.githack.com/wiki/nxdir-s/pipelines/coverage.html)
+
+# pipelines
 
 Pipelines contains generic functions that help with concurrent processing
 
