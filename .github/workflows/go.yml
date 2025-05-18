@@ -18,11 +18,12 @@ jobs:
           go-version: stable
 
       - name: Test
-        run: go test -v -coverprofile coverage.out ./...
+        run: go test -v ./...
 
-      - name: Update coverage badge
-        uses: ncruces/go-coverage-report@main
+      - name: Update coverage report
+        uses: ncruces/go-coverage-report@v0
         with:
-          coverage-file: coverage.out
-          reuse-go: true
+          report: true
+          chart: true
           amend: true
+        continue-on-error: true
