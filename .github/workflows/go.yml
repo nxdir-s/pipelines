@@ -1,0 +1,31 @@
+name: Go
+
+on:
+  push:
+    branches: [$default-branch]
+  pull_request:
+    branches: [$default-branch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: stable
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Test
+        run: go test -v -coverprofile coverage.out ./...
+
+      - name: Update coverage badge
+        uses: ncruces/go-coverage-report@main
+        with:
+          coverage-file: coverage.out
+          reuse-go: true
+          amend: true
