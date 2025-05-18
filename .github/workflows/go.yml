@@ -5,8 +5,10 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+
 permissions:
   contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,7 +29,4 @@ jobs:
           report: true
           chart: true
           amend: true
-        if: |
-          matrix.os == 'ubuntu-latest' &&
-          github.event_name == 'push'
         continue-on-error: true
