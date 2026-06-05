@@ -7,15 +7,15 @@ import (
 	"testing"
 )
 
-// benchSizes is the set of input lengths each benchmark sweeps over.
 var benchSizes = []int{100, 1_000, 10_000}
 
-// benchFans is the set of fan-out widths the FanOut/FanIn benchmarks sweep over.
 var benchFans = []int{1, 4, 8, 16}
 
-// benchID is the no-op process function used by the fan benchmarks. It
-// isolates pipeline/channel overhead from any user workload.
-func benchID(ctx context.Context, x int) int { return x }
+var benchBuffers = []int{1, 64, 256}
+
+func benchID(ctx context.Context, x int) int {
+	return x
+}
 
 func makeSlice(n int) []int {
 	data := make([]int, n)
@@ -133,10 +133,10 @@ func BenchmarkFanOut(b *testing.B) {
 }
 
 func BenchmarkFanIn(b *testing.B) {
-	for _, n := range benchSizes {
-		data := makeSlice(n)
+	for i := range benchSizes {
+		data := makeSlice(benchSizes[i])
 
-		b.Run(fmt.Sprintf("size=%d", n), func(b *testing.B) {
+		b.Run(fmt.Sprintf("size=%d", benchSizes[i]), func(b *testing.B) {
 			for _, fan := range benchFans {
 				b.Run(fmt.Sprintf("fan=%d", fan), func(b *testing.B) {
 					b.ReportAllocs()
@@ -178,6 +178,37 @@ func BenchmarkPipeline(b *testing.B) {
 						}
 
 						cancel()
+					}
+				})
+			}
+		})
+	}
+}
+
+func BenchmarkPipelineBuffer(b *testing.B) {
+	for i := range benchSizes {
+		data := makeSlice(benchSizes[i])
+
+		b.Run(fmt.Sprintf("size=%d", benchSizes[i]), func(b *testing.B) {
+			for _, fan := range benchFans {
+				b.Run(fmt.Sprintf("fan=%d", fan), func(b *testing.B) {
+					for n := range benchBuffers {
+						b.Run(fmt.Sprintf("buf=%d", benchBuffers[n]), func(b *testing.B) {
+							b.ReportAllocs()
+
+							for b.Loop() {
+								ctx, cancel := context.WithCancel(context.Background())
+
+								stream := StreamSlice(ctx, data)
+								fanOut := FanOut(ctx, stream, benchID, fan)
+								merged := FanInBuffer(ctx, benchBuffers[n], fanOut...)
+
+								for range merged {
+								}
+
+								cancel()
+							}
+						})
 					}
 				})
 			}
