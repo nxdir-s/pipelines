@@ -98,7 +98,7 @@ func FanOut[T any, H any](ctx context.Context, inputStream <-chan T, fn func(con
 // FanIn takes any number of readonly channels and returns a fanned in channel
 func FanIn[T any](ctx context.Context, channels ...<-chan T) <-chan T {
 	var wg sync.WaitGroup
-	fannedInStream := make(chan T, 1)
+	fannedInStream := make(chan T, len(channels))
 
 	transfer := func(c <-chan T) {
 		defer wg.Done()
