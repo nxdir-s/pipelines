@@ -5,9 +5,11 @@ import (
 	"sync"
 )
 
+const buffer int = 64
+
 // GenerateStream takes a function that generates data and returns a channel of type T
 func GenerateStream[T any](ctx context.Context, fn func(context.Context) T) <-chan T {
-	stream := make(chan T)
+	stream := make(chan T, buffer)
 
 	go func() {
 		defer close(stream)
@@ -26,7 +28,7 @@ func GenerateStream[T any](ctx context.Context, fn func(context.Context) T) <-ch
 
 // StreamSlice takes a slice of type []T and returns a channel of type T
 func StreamSlice[T any](ctx context.Context, data []T) <-chan T {
-	stream := make(chan T)
+	stream := make(chan T, buffer)
 
 	go func() {
 		defer close(stream)
@@ -45,7 +47,7 @@ func StreamSlice[T any](ctx context.Context, data []T) <-chan T {
 
 // StreamMap takes a map of type map[T]H and returns a channel of type H
 func StreamMap[T comparable, H comparable](ctx context.Context, data map[T]H) <-chan H {
-	stream := make(chan H)
+	stream := make(chan H, buffer)
 
 	go func() {
 		defer close(stream)
@@ -65,7 +67,7 @@ func StreamMap[T comparable, H comparable](ctx context.Context, data map[T]H) <-
 // FanOut controls concurrent processing of data from the input channel
 func FanOut[T any, H any](ctx context.Context, inputStream <-chan T, fn func(context.Context, T) H, numFan int) []<-chan H {
 	process := func() <-chan H {
-		stream := make(chan H)
+		stream := make(chan H, buffer)
 
 		go func() {
 			defer close(stream)
@@ -96,7 +98,7 @@ func FanOut[T any, H any](ctx context.Context, inputStream <-chan T, fn func(con
 // FanIn takes any number of readonly channels and returns a fanned in channel
 func FanIn[T any](ctx context.Context, channels ...<-chan T) <-chan T {
 	var wg sync.WaitGroup
-	fannedInStream := make(chan T)
+	fannedInStream := make(chan T, 1)
 
 	transfer := func(c <-chan T) {
 		defer wg.Done()
