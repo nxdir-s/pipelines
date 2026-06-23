@@ -202,7 +202,7 @@ func BenchmarkPipelineBuffer(b *testing.B) {
 								ctx, cancel := context.WithCancel(context.Background())
 
 								stream := StreamSlice(ctx, data)
-								fanOut := FanOut(ctx, stream, benchID, fan)
+								fanOut := FanOutBuffer(ctx, benchBuffers[n], stream, benchID, fan)
 								merged := FanInBuffer(ctx, benchBuffers[n], fanOut...)
 
 								for range merged {
