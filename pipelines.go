@@ -125,6 +125,37 @@ func FanIn[T any](ctx context.Context, channels ...<-chan T) <-chan T {
 	return fannedInStream
 }
 
+// FanOutBuffer controls concurrent processing of data from the input channel
+func FanOutBuffer[T any, H any](ctx context.Context, buffer int, inputStream <-chan T, fn func(context.Context, T) H, numFan int) []<-chan H {
+	process := func() <-chan H {
+		stream := make(chan H, buffer)
+
+		go func() {
+			defer close(stream)
+
+			for value := range inputStream {
+				select {
+				case <-ctx.Done():
+					return
+				default:
+					// process data with supplied function
+					stream <- fn(ctx, value)
+				}
+			}
+		}()
+
+		return stream
+	}
+
+	fanOutChannels := make([]<-chan H, numFan)
+
+	for i := 0; i < numFan; i++ {
+		fanOutChannels[i] = process()
+	}
+
+	return fanOutChannels
+}
+
 // FanInBuffer takes any number of readonly channels and a buffer value to return a fanned in channel
 func FanInBuffer[T any](ctx context.Context, buffer int, channels ...<-chan T) <-chan T {
 	var wg sync.WaitGroup
